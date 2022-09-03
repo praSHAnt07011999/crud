@@ -12,6 +12,23 @@ function App() {
   // All States
     const [tasks, setTasks] = useState([]); 
     const [showAddTask, setShowAddTask] = useState(false); 
+    const [loading, setloading] = useState(true);
+
+    useEffect(() => {
+      setTimeout(() => {
+          setloading(false); 
+      }, 1000);
+    }, [])
+
+    // Fetching from Local Storage
+    const getTasks = JSON.parse(localStorage.getItem("taskAdded"));
+    useEffect(() => {
+        if (getTasks == null) {
+            setTasks([])
+        } else {
+            setTasks(getTasks);
+        }
+    }, [])
 
     const addTask = (task) => {
       const id = uuidv4();
@@ -22,7 +39,8 @@ function App() {
           title: 'Yay...',
           text: 'You have successfully added a new task!'
       })
-    }
+      localStorage.setItem("taskAdded", JSON.stringify([...tasks, newTask]));
+  }
 
     const deleteTask = (id) => {
       const deleteTask = tasks.filter((task) => task.id !== id);
@@ -32,6 +50,7 @@ function App() {
           title: 'Oops...',
           text: 'You have successfully deleted a task!'
       })
+      localStorage.setItem("taskAdded", JSON.stringify(deleteTask));
   }
 
   const editTask = (id) => {
@@ -53,25 +72,49 @@ function App() {
         title: 'Yay...',
         text: 'You have successfully edited an existing task!'
     })
+    localStorage.setItem("taskAdded", JSON.stringify(myData));
+    window.location.reload();
 }
 
-    return (
-        <>
-          <div className="container">
-            {/* App Header */}
-            <Header showForm={() => setShowAddTask(!showAddTask)} changeTextAndColor={showAddTask} />
-            {/* Revealing the Add Task Form */}
+return (
+  <>
+    {
+      loading ?
+        <div className="spinnerContainer">
+          <div className="spinner-grow text-primary" role="status">
+              <span className="visually-hidden">Loading...</span>
+          </div>
+          <div className="spinner-grow text-secondary" role="status">
+              <span className="visually-hidden">Loading...</span>
+          </div>
+          <div className="spinner-grow text-success" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+            <div className="spinner-grow text-danger" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+            <div className="spinner-grow text-warning" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+        </div> :
+        <div className="container">
+          {/* App Header that has open and App Name */}
+          <Header showForm={() => setShowAddTask(!showAddTask)} changeTextAndColor={showAddTask} />
+            {/* Revealing of Add Task Form */}
             {showAddTask && <AddTask onSave={addTask} />}
+            {/* Task Counter */}
             <h3>Number of Tasks: {tasks.length}</h3>
-            {/* Displaying Tasks */}
+            
+            {/* Displaying of Tasks */}
             {
               tasks.length > 0 ?
-                (<Tasks tasks={tasks} onDelete={deleteTask} onEdit={editTask}/>) :
+                (<Tasks tasks={tasks} onDelete={deleteTask} onEdit={editTask} />) :
                 ('No Task Found!')
             }
-          </div>
-        </>
-    )
+        </div>
+      }
+  </>
+)
 }
 
 export default App;

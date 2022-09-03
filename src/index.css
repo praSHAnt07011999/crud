@@ -90,3 +90,8 @@
   color: blue;
   cursor: pointer;
 } 
+
+.spinnerContainer {
+  margin: 20% auto;
+  max-width: 15%;
+}
